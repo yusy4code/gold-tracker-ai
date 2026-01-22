@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gold Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Gold Purchase Tracker</h1>
+
+        <!-- Current Gold Price Input -->
+        <div class="current-price-section">
+            <label for="currentPrice">1 XAU Price (31.1g in AED):</label>
+            <input type="number" id="currentPrice" step="0.01" placeholder="Enter 1 XAU price">
+            <button id="updatePriceBtn">Update Price</button>
+            <div class="per-gram-display">
+                <span class="per-gram-label">Per gram:</span>
+                <span class="per-gram-value" id="perGramPrice">-</span>
+            </div>
+        </div>
+
+        <!-- Summary Section -->
+        <div class="summary-section">
+            <div class="summary-card">
+                <div class="summary-label">Total Cost</div>
+                <div class="summary-value" id="totalCost">0.00 AED</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Current Value</div>
+                <div class="summary-value" id="totalCurrentValue">- AED</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Profit/Loss</div>
+                <div class="summary-value" id="totalPL">- AED</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">P/L %</div>
+                <div class="summary-value" id="totalPLPercent">-%</div>
+            </div>
+        </div>
+
+        <!-- Add Purchase Form -->
+        <div class="form-section">
+            <h2>Add New Purchase</h2>
+            <form id="purchaseForm">
+                <div class="form-group">
+                    <label for="purchaseDate">Date of Purchase:</label>
+                    <input type="date" id="purchaseDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="xauAmount">XAU Amount:</label>
+                    <input type="number" id="xauAmount" step="0.0001" placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label for="totalPrice">Total Price (AED):</label>
+                    <input type="number" id="totalPrice" step="0.01" placeholder="0.00" required>
+                </div>
+                <button type="submit">Add Purchase</button>
+            </form>
+        </div>
+
+        <!-- Purchases Table -->
+        <div class="table-section">
+            <h2>Purchase History</h2>
+            <div class="table-wrapper">
+                <table id="purchasesTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>XAU</th>
+                            <th>Grams</th>
+                            <th>Price (AED/g)</th>
+                            <th>Total Cost (AED)</th>
+                            <th>Current Value (AED)</th>
+                            <th>P/L (AED)</th>
+                            <th>P/L %</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="purchasesBody">
+                        <!-- Purchases will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Purchase</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="editForm">
+                <div class="form-group">
+                    <label for="editDate">Date of Purchase:</label>
+                    <input type="date" id="editDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="editXauAmount">XAU Amount:</label>
+                    <input type="number" id="editXauAmount" step="0.0001" placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label for="editTotalPrice">Total Price (AED):</label>
+                    <input type="number" id="editTotalPrice" step="0.01" placeholder="0.00" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="save-btn">Save Changes</button>
+                    <button type="button" class="delete-btn" id="deleteBtn">Delete Purchase</button>
+                    <button type="button" class="cancel-btn" id="cancelBtn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

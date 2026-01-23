@@ -36,58 +36,117 @@ h2 {
 
 /* Current Price Section */
 .current-price-section {
-    background: #2a2a2a;
-    padding: 20px;
+    background: linear-gradient(135deg, #2a2a2a 0%, #323232 100%);
+    padding: 25px;
     border-radius: 8px;
     margin-bottom: 30px;
+    border: 1px solid #3a3a3a;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.price-display {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 15px;
-    flex-wrap: wrap;
-    border: 1px solid #3a3a3a;
 }
 
-.current-price-section label {
-    font-weight: 600;
-    color: #d0d0d0;
-}
-
-.current-price-section input {
-    flex: 1;
-    min-width: 200px;
-    padding: 10px 15px;
-    border: 2px solid #3a3a3a;
-    border-radius: 5px;
-    font-size: 16px;
-    background: #1e1e1e;
-    color: #f0f0f0;
-}
-
-.current-price-section input:focus {
-    outline: none;
-    border-color: #5a5a5a;
-}
-
-.per-gram-display {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 15px;
-    background: #1e1e1e;
-    border: 1px solid #3a3a3a;
-    border-radius: 5px;
-}
-
-.per-gram-label {
-    font-size: 14px;
-    color: #888;
-    font-weight: 600;
-}
-
-.per-gram-value {
-    font-size: 16px;
-    color: #4ade80;
+.price-label {
+    font-size: 18px;
     font-weight: 700;
+    color: #f0f0f0;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    border-bottom: 2px solid #4ade80;
+    padding-bottom: 10px;
+    margin-bottom: 5px;
+}
+
+.price-details {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.price-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: #1e1e1e;
+    border-radius: 6px;
+    border: 1px solid #3a3a3a;
+}
+
+.price-item.bank-rate {
+    background: #252525;
+    border: 1px solid #4a4a4a;
+    border-left: 3px solid #fbbf24;
+}
+
+.price-item-label {
+    font-size: 15px;
+    color: #b0b0b0;
+    font-weight: 600;
+}
+
+.price-value-container {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.price-item-value {
+    font-size: 20px;
+    color: #f0f0f0;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.price-item-value.bank-buy {
+    color: #fbbf24;
+}
+
+.price-item-value.bank-sell {
+    color: #fbbf24;
+}
+
+.bank-rate-details {
+    display: flex;
+    gap: 5px;
+    flex-direction: row;
+    align-items: center;
+}
+
+.bank-rate-per-gram {
+    font-size: 13px;
+    color: #a0a0a0;
+    font-weight: 500;
+}
+
+.price-change {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.price-up {
+    color: #4ade80;
+    background: rgba(74, 222, 128, 0.1);
+}
+
+.price-down {
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.1);
+}
+
+.price-update-time {
+    font-size: 12px;
+    color: #888;
+    text-align: center;
+    margin-top: 5px;
+    font-style: italic;
 }
 
 /* Summary Section */
@@ -425,18 +484,39 @@ tbody tr:last-child td {
     }
 
     .current-price-section {
+        padding: 20px;
+    }
+
+    .price-label {
+        font-size: 16px;
+    }
+
+    .price-item {
+        padding: 10px 12px;
         flex-direction: column;
-        align-items: stretch;
-        padding: 15px;
+        align-items: flex-start;
+        gap: 8px;
     }
 
-    .current-price-section input {
+    .price-item-label {
+        font-size: 13px;
+    }
+
+    .price-value-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
         width: 100%;
     }
 
-    .per-gram-display {
+    .price-item-value {
+        font-size: 18px;
+    }
+
+    .price-change {
+        font-size: 12px;
         width: 100%;
-        justify-content: center;
+        text-align: center;
     }
 
     .summary-section {

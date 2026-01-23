@@ -10,14 +10,45 @@
     <div class="container">
         <h1>Gold Purchase Tracker</h1>
 
-        <!-- Current Gold Price Input -->
+        <!-- Current Gold Price Display -->
         <div class="current-price-section">
-            <label for="currentPrice">1 XAU Price (31.1g in AED):</label>
-            <input type="number" id="currentPrice" step="0.01" placeholder="Enter 1 XAU price">
-            <button id="updatePriceBtn">Update Price</button>
-            <div class="per-gram-display">
-                <span class="per-gram-label">Per gram:</span>
-                <span class="per-gram-value" id="perGramPrice">-</span>
+            <div class="price-display">
+                <div class="price-label">Current Gold Price</div>
+                <div class="price-details">
+                    <div class="price-item">
+                        <span class="price-item-label">Market - 1 XAU:</span>
+                        <div class="price-value-container">
+                            <span class="price-item-value" id="xauPrice">Loading...</span>
+                            <span class="price-change" id="xauChange"></span>
+                        </div>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-item-label">Market - Per gram:</span>
+                        <div class="price-value-container">
+                            <span class="price-item-value" id="perGramPrice">Loading...</span>
+                            <span class="price-change" id="perGramChange"></span>
+                        </div>
+                    </div>
+                    <div class="price-item bank-rate">
+                        <span class="price-item-label">Bank Buy:</span>
+                        <div class="price-value-container">
+                            <div class="bank-rate-details">
+                                <span class="price-item-value bank-buy" id="bankBuyXau">Loading...</span>
+                                <span class="bank-rate-per-gram" id="bankBuyGram">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="price-item bank-rate">
+                        <span class="price-item-label">Bank Sell:</span>
+                        <div class="price-value-container">
+                            <div class="bank-rate-details">
+                                <span class="price-item-value bank-sell" id="bankSellXau">Loading...</span>
+                                <span class="bank-rate-per-gram" id="bankSellGram">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="price-update-time" id="priceUpdateTime"></div>
             </div>
         </div>
 

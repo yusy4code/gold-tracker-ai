@@ -124,15 +124,146 @@ function getPurchaseById(id) {
 
 // Current gold price per gram (stored in memory)
 let currentGoldPrice = 0;
+let bankBuyPricePerGram = 0;
 
 // XAU to grams conversion constant
-const XAU_TO_GRAMS = 31.1;
+const XAU_TO_GRAMS = 31.1035;
+
+// Bank rate adjustment (AED per XAU)
+const BANK_RATE_ADJUSTMENT = 150;
+
+// Update change indicator with arrow and styling
+function updateChangeIndicator(elementId, change, percent) {
+    const element = document.getElementById(elementId);
+    const isPositive = change > 0;
+    const arrow = isPositive ? '▲' : '▼';
+    const sign = isPositive ? '+' : '';
+
+    element.textContent = `${arrow} ${sign}${change.toFixed(2)} ${sign}${percent.toFixed(2)}%`;
+    element.className = 'price-change ' + (isPositive ? 'price-up' : 'price-down');
+}
+
+// Fetch current gold price from API
+async function fetchGoldPrice() {
+    try {
+        const response = await fetch('https://data-asg.goldprice.org/dbXRates/AED');
+        if (!response.ok) {
+            throw new Error('Failed to fetch gold price');
+        }
+
+        const data = await response.json();
+        const xauPrice = data.items[0].xauPrice; // Price per troy ounce
+        const pricePerGram = xauPrice / XAU_TO_GRAMS;
+        const xauChange = data.items[0].chgXau; // Change in XAU price
+        const xauPercent = data.items[0].pcXau; // Percent change in XAU
+
+        // Calculate change per gram
+        const gramChange = xauChange / XAU_TO_GRAMS;
+
+        // Update global variable
+        currentGoldPrice = pricePerGram;
+
+        // Store in localStorage
+        localStorage.setItem('currentGoldPrice', pricePerGram.toString());
+        localStorage.setItem('lastPriceUpdate', new Date().toISOString());
+        localStorage.setItem('xauChange', xauChange.toString());
+        localStorage.setItem('xauPercent', xauPercent.toString());
+
+        // Calculate bank rates
+        const bankBuyRate = xauPrice - BANK_RATE_ADJUSTMENT;
+        const bankSellRate = xauPrice + BANK_RATE_ADJUSTMENT;
+        const bankBuyPerGram = bankBuyRate / XAU_TO_GRAMS;
+        const bankSellPerGram = bankSellRate / XAU_TO_GRAMS;
+
+        // Store bank buy rate for P/L calculations (what you'd get selling to bank)
+        bankBuyPricePerGram = bankBuyPerGram;
+        localStorage.setItem('bankBuyPricePerGram', bankBuyPerGram.toString());
+
+        // Update UI
+        document.getElementById('xauPrice').textContent = xauPrice.toFixed(2);
+        document.getElementById('perGramPrice').textContent = pricePerGram.toFixed(2);
+        document.getElementById('bankBuyXau').textContent = bankBuyRate.toFixed(2);
+        document.getElementById('bankSellXau').textContent = bankSellRate.toFixed(2);
+        document.getElementById('bankBuyGram').textContent = '(' + bankBuyPerGram.toFixed(2) + ' AED/g)';
+        document.getElementById('bankSellGram').textContent = '(' + bankSellPerGram.toFixed(2) + ' AED/g)';
+
+        // Update change indicators
+        updateChangeIndicator('xauChange', xauChange, xauPercent);
+        updateChangeIndicator('perGramChange', gramChange, xauPercent);
+
+        // Show last update time
+        const updateTime = new Date().toLocaleString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        document.getElementById('priceUpdateTime').textContent = 'Last updated: ' + updateTime;
+
+        return pricePerGram;
+    } catch (error) {
+        console.error('Failed to fetch gold price:', error);
+
+        // Try to load from localStorage as fallback
+        const savedPrice = localStorage.getItem('currentGoldPrice');
+        if (savedPrice) {
+            currentGoldPrice = parseFloat(savedPrice);
+            const xauPrice = currentGoldPrice * XAU_TO_GRAMS;
+            document.getElementById('xauPrice').textContent = xauPrice.toFixed(2);
+            document.getElementById('perGramPrice').textContent = currentGoldPrice.toFixed(2);
+
+            // Calculate and display bank rates
+            const bankBuyRate = xauPrice - BANK_RATE_ADJUSTMENT;
+            const bankSellRate = xauPrice + BANK_RATE_ADJUSTMENT;
+            const bankBuyPerGram = bankBuyRate / XAU_TO_GRAMS;
+            const bankSellPerGram = bankSellRate / XAU_TO_GRAMS;
+
+            bankBuyPricePerGram = bankBuyPerGram;
+
+            document.getElementById('bankBuyXau').textContent = bankBuyRate.toFixed(2);
+            document.getElementById('bankSellXau').textContent = bankSellRate.toFixed(2);
+            document.getElementById('bankBuyGram').textContent = '(' + bankBuyPerGram.toFixed(2) + ' AED/g)';
+            document.getElementById('bankSellGram').textContent = '(' + bankSellPerGram.toFixed(2) + ' AED/g)';
+
+            // Load cached change data
+            const savedXauChange = localStorage.getItem('xauChange');
+            const savedXauPercent = localStorage.getItem('xauPercent');
+            if (savedXauChange && savedXauPercent) {
+                const xauChange = parseFloat(savedXauChange);
+                const xauPercent = parseFloat(savedXauPercent);
+                const gramChange = xauChange / XAU_TO_GRAMS;
+                updateChangeIndicator('xauChange', xauChange, xauPercent);
+                updateChangeIndicator('perGramChange', gramChange, xauPercent);
+            }
+
+            const lastUpdate = localStorage.getItem('lastPriceUpdate');
+            if (lastUpdate) {
+                const updateDate = new Date(lastUpdate);
+                const updateTime = updateDate.toLocaleString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                document.getElementById('priceUpdateTime').textContent = 'Last updated: ' + updateTime + ' (cached)';
+            }
+        } else {
+            document.getElementById('xauPrice').textContent = 'Failed to load';
+            document.getElementById('perGramPrice').textContent = 'Failed to load';
+            document.getElementById('priceUpdateTime').textContent = 'Unable to fetch price. Please check your connection.';
+        }
+
+        return currentGoldPrice;
+    }
+}
 
 // Initialize the app
 async function init() {
     try {
         await initDB();
-        loadCurrentPrice();
+        await fetchGoldPrice();
         displayPurchases();
         setupEventListeners();
     } catch (error) {
@@ -145,9 +276,6 @@ async function init() {
 function setupEventListeners() {
     // Form submission
     document.getElementById('purchaseForm').addEventListener('submit', handleFormSubmit);
-
-    // Update price button
-    document.getElementById('updatePriceBtn').addEventListener('click', handlePriceUpdate);
 
     // Set default date to today
     document.getElementById('purchaseDate').valueAsDate = new Date();
@@ -213,43 +341,6 @@ async function handleFormSubmit(event) {
     }
 }
 
-// Handle price update
-function handlePriceUpdate() {
-    const priceInput = document.getElementById('currentPrice');
-    const xauPrice = parseFloat(priceInput.value);
-
-    if (!xauPrice || xauPrice <= 0) {
-        alert('Please enter a valid 1 XAU price');
-        return;
-    }
-
-    // Convert XAU price to per gram price
-    currentGoldPrice = xauPrice / XAU_TO_GRAMS;
-
-    // Store the per gram price
-    localStorage.setItem('currentGoldPrice', currentGoldPrice.toString());
-
-    // Update per gram display
-    document.getElementById('perGramPrice').textContent = currentGoldPrice.toFixed(2) + ' AED/g';
-
-    displayPurchases();
-}
-
-// Load current price from localStorage
-function loadCurrentPrice() {
-    const savedPrice = localStorage.getItem('currentGoldPrice');
-    if (savedPrice) {
-        currentGoldPrice = parseFloat(savedPrice);
-
-        // Calculate XAU price from per gram price
-        const xauPrice = currentGoldPrice * XAU_TO_GRAMS;
-        document.getElementById('currentPrice').value = xauPrice.toFixed(2);
-
-        // Update per gram display
-        document.getElementById('perGramPrice').textContent = currentGoldPrice.toFixed(2) + ' AED/g';
-    }
-}
-
 // Display all purchases
 async function displayPurchases() {
     try {
@@ -276,13 +367,13 @@ async function displayPurchases() {
             tbody.appendChild(row);
 
             totalCost += purchase.totalCost;
-            if (currentGoldPrice > 0) {
-                totalCurrentValue += purchase.grams * currentGoldPrice;
+            if (bankBuyPricePerGram > 0) {
+                totalCurrentValue += purchase.grams * bankBuyPricePerGram;
             }
         });
 
-        const totalPL = currentGoldPrice > 0 ? totalCurrentValue - totalCost : 0;
-        const totalPLPercent = totalCost > 0 && currentGoldPrice > 0
+        const totalPL = bankBuyPricePerGram > 0 ? totalCurrentValue - totalCost : 0;
+        const totalPLPercent = totalCost > 0 && bankBuyPricePerGram > 0
             ? (totalPL / totalCost) * 100
             : 0;
 
@@ -299,9 +390,9 @@ function createPurchaseRow(purchase) {
     // Calculate XAU from grams if not stored (backward compatibility)
     const xauAmount = purchase.xau || (purchase.grams / XAU_TO_GRAMS);
 
-    const currentValue = currentGoldPrice > 0 ? purchase.grams * currentGoldPrice : 0;
-    const profitLoss = currentGoldPrice > 0 ? currentValue - purchase.totalCost : 0;
-    const profitLossPercent = currentGoldPrice > 0 ? (profitLoss / purchase.totalCost) * 100 : 0;
+    const currentValue = bankBuyPricePerGram > 0 ? purchase.grams * bankBuyPricePerGram : 0;
+    const profitLoss = bankBuyPricePerGram > 0 ? currentValue - purchase.totalCost : 0;
+    const profitLossPercent = bankBuyPricePerGram > 0 ? (profitLoss / purchase.totalCost) * 100 : 0;
 
     const plClass = profitLoss > 0 ? 'profit' : profitLoss < 0 ? 'loss' : '';
     const plSign = profitLoss > 0 ? '+' : '';
@@ -312,9 +403,9 @@ function createPurchaseRow(purchase) {
         <td data-label="Grams">${formatGrams(purchase.grams)}</td>
         <td data-label="Price (AED/g)">${purchase.purchasePrice.toFixed(2)}</td>
         <td data-label="Total Cost (AED)">${purchase.totalCost.toFixed(2)}</td>
-        <td data-label="Current Value (AED)">${currentGoldPrice > 0 ? currentValue.toFixed(2) : '-'}</td>
-        <td data-label="P/L (AED)" class="${plClass}">${currentGoldPrice > 0 ? plSign + profitLoss.toFixed(2) : '-'}</td>
-        <td data-label="P/L %" class="${plClass}">${currentGoldPrice > 0 ? plSign + profitLossPercent.toFixed(2) + '%' : '-'}</td>
+        <td data-label="Current Value (AED)">${bankBuyPricePerGram > 0 ? currentValue.toFixed(2) : '-'}</td>
+        <td data-label="P/L (AED)" class="${plClass}">${bankBuyPricePerGram > 0 ? plSign + profitLoss.toFixed(2) : '-'}</td>
+        <td data-label="P/L %" class="${plClass}">${bankBuyPricePerGram > 0 ? plSign + profitLossPercent.toFixed(2) + '%' : '-'}</td>
         <td><button class="update-btn" onclick="openEditModal(${purchase.id})">Update</button></td>
     `;
 
@@ -326,12 +417,12 @@ function updateTotals(totalCost, totalCurrentValue, totalPL, totalPLPercent) {
     document.getElementById('totalCost').textContent = totalCost.toFixed(2) + ' AED';
 
     const totalCurrentValueCell = document.getElementById('totalCurrentValue');
-    totalCurrentValueCell.textContent = currentGoldPrice > 0 ? totalCurrentValue.toFixed(2) + ' AED' : '- AED';
+    totalCurrentValueCell.textContent = bankBuyPricePerGram > 0 ? totalCurrentValue.toFixed(2) + ' AED' : '- AED';
 
     const totalPLCell = document.getElementById('totalPL');
     const totalPLPercentCell = document.getElementById('totalPLPercent');
 
-    if (currentGoldPrice > 0) {
+    if (bankBuyPricePerGram > 0) {
         const plClass = totalPL > 0 ? 'profit' : totalPL < 0 ? 'loss' : '';
         const plSign = totalPL > 0 ? '+' : '';
 

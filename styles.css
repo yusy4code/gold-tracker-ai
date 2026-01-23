@@ -179,46 +179,6 @@ h2 {
     color: #f0f0f0;
 }
 
-/* Form Section */
-.form-section {
-    background: #2a2a2a;
-    padding: 25px;
-    border-radius: 8px;
-    margin-bottom: 30px;
-    border: 1px solid #3a3a3a;
-}
-
-#purchaseForm {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    align-items: end;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-}
-
-.form-group label {
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: #d0d0d0;
-}
-
-.form-group input {
-    padding: 10px 15px;
-    border: 2px solid #3a3a3a;
-    border-radius: 5px;
-    font-size: 16px;
-    background: #1e1e1e;
-    color: #f0f0f0;
-}
-
-.form-group input:focus {
-    outline: none;
-    border-color: #5a5a5a;
-}
 
 button {
     background: linear-gradient(135deg, #4a4a4a 0%, #5a5a5a 100%);
@@ -245,6 +205,41 @@ button:active {
 /* Table Section */
 .table-section {
     margin-top: 30px;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.table-header h2 {
+    margin: 0;
+}
+
+.add-purchase-btn {
+    background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+    border: 1px solid #16a34a;
+    color: #ffffff;
+    padding: 12px 24px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.add-purchase-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(74, 222, 128, 0.4);
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+}
+
+.add-purchase-btn:active {
+    transform: translateY(0);
 }
 
 .table-wrapper {
@@ -403,25 +398,29 @@ tbody tr:last-child td {
     color: #f0f0f0;
 }
 
-#editForm {
+#editForm,
+#purchaseForm {
     padding: 25px;
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-#editForm .form-group {
+#editForm .form-group,
+#purchaseForm .form-group {
     display: flex;
     flex-direction: column;
 }
 
-#editForm .form-group label {
+#editForm .form-group label,
+#purchaseForm .form-group label {
     margin-bottom: 8px;
     font-weight: 600;
     color: #d0d0d0;
 }
 
-#editForm .form-group input {
+#editForm .form-group input,
+#purchaseForm .form-group input {
     padding: 10px 15px;
     border: 2px solid #3a3a3a;
     border-radius: 5px;
@@ -430,7 +429,8 @@ tbody tr:last-child td {
     color: #f0f0f0;
 }
 
-#editForm .form-group input:focus {
+#editForm .form-group input:focus,
+#purchaseForm .form-group input:focus {
     outline: none;
     border-color: #5a5a5a;
 }
@@ -536,12 +536,17 @@ tbody tr:last-child td {
         font-size: 18px;
     }
 
-    #purchaseForm {
-        grid-template-columns: 1fr;
+    .table-header {
+        flex-direction: column;
+        align-items: stretch;
     }
 
-    .form-section {
-        padding: 15px;
+    .table-header h2 {
+        text-align: center;
+    }
+
+    .add-purchase-btn {
+        width: 100%;
     }
 
     /* Card-based layout for table on mobile */
@@ -653,7 +658,8 @@ tbody tr:last-child td {
         font-size: 1.3em;
     }
 
-    #editForm {
+    #editForm,
+    #purchaseForm {
         padding: 20px;
     }
 

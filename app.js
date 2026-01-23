@@ -274,30 +274,53 @@ async function init() {
 
 // Setup event listeners
 function setupEventListeners() {
+    // Add Purchase button
+    document.getElementById('addPurchaseBtn').addEventListener('click', openAddModal);
+
     // Form submission
     document.getElementById('purchaseForm').addEventListener('submit', handleFormSubmit);
 
-    // Set default date to today
-    document.getElementById('purchaseDate').valueAsDate = new Date();
+    // Add modal event listeners
+    const addModal = document.getElementById('addModal');
+    const addModalClose = document.getElementById('addModalClose');
+    const addCancelBtn = document.getElementById('addCancelBtn');
 
-    // Modal event listeners
-    const modal = document.getElementById('editModal');
-    const closeBtn = document.querySelector('.close');
+    addModalClose.addEventListener('click', closeAddModal);
+    addCancelBtn.addEventListener('click', closeAddModal);
+
+    // Edit modal event listeners
+    const editModal = document.getElementById('editModal');
+    const editCloseBtn = document.querySelector('#editModal .close');
     const cancelBtn = document.getElementById('cancelBtn');
     const deleteBtn = document.getElementById('deleteBtn');
     const editForm = document.getElementById('editForm');
 
-    closeBtn.addEventListener('click', closeEditModal);
+    editCloseBtn.addEventListener('click', closeEditModal);
     cancelBtn.addEventListener('click', closeEditModal);
     deleteBtn.addEventListener('click', handleDeleteFromModal);
     editForm.addEventListener('submit', handleEditFormSubmit);
 
-    // Close modal when clicking outside
+    // Close modals when clicking outside
     window.addEventListener('click', (event) => {
-        if (event.target === modal) {
+        if (event.target === editModal) {
             closeEditModal();
         }
+        if (event.target === addModal) {
+            closeAddModal();
+        }
     });
+}
+
+// Open add purchase modal
+function openAddModal() {
+    document.getElementById('addModal').style.display = 'block';
+    document.getElementById('purchaseDate').valueAsDate = new Date();
+}
+
+// Close add purchase modal
+function closeAddModal() {
+    document.getElementById('addModal').style.display = 'none';
+    document.getElementById('purchaseForm').reset();
 }
 
 // Handle form submission
@@ -328,10 +351,8 @@ async function handleFormSubmit(event) {
     try {
         await addPurchase(purchase);
 
-        // Clear form
-        document.getElementById('xauAmount').value = '';
-        document.getElementById('totalPrice').value = '';
-        document.getElementById('purchaseDate').valueAsDate = new Date();
+        // Close modal and clear form
+        closeAddModal();
 
         // Refresh display
         displayPurchases();

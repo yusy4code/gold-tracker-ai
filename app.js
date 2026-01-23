@@ -404,6 +404,15 @@ async function displayPurchases() {
     }
 }
 
+// Calculate days since purchase
+function calculateDaysOld(purchaseDate) {
+    const today = new Date();
+    const purchase = new Date(purchaseDate + 'T00:00:00');
+    const diffTime = Math.abs(today - purchase);
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+}
+
 // Create a table row for a purchase
 function createPurchaseRow(purchase) {
     const row = document.createElement('tr');
@@ -418,6 +427,8 @@ function createPurchaseRow(purchase) {
     const plClass = profitLoss > 0 ? 'profit' : profitLoss < 0 ? 'loss' : '';
     const plSign = profitLoss > 0 ? '+' : '';
 
+    const daysOld = calculateDaysOld(purchase.date);
+
     row.innerHTML = `
         <td data-label="Date">${formatDate(purchase.date)}</td>
         <td data-label="XAU">${formatGrams(xauAmount)}</td>
@@ -425,10 +436,18 @@ function createPurchaseRow(purchase) {
         <td data-label="Price (AED/g)">${purchase.purchasePrice.toFixed(2)}</td>
         <td data-label="Total Cost (AED)">${purchase.totalCost.toFixed(2)}</td>
         <td data-label="Current Value (AED)">${bankBuyPricePerGram > 0 ? currentValue.toFixed(2) : '-'}</td>
-        <td data-label="P/L (AED)" class="${plClass}">${bankBuyPricePerGram > 0 ? plSign + profitLoss.toFixed(2) : '-'}</td>
+        <td data-label="P/L (AED)" class="${plClass}" data-pl="${bankBuyPricePerGram > 0 ? plSign + profitLoss.toFixed(2) : '-'}" data-days="${daysOld}">${bankBuyPricePerGram > 0 ? plSign + profitLoss.toFixed(2) : '-'}</td>
         <td data-label="P/L %" class="${plClass}">${bankBuyPricePerGram > 0 ? plSign + profitLossPercent.toFixed(2) + '%' : '-'}</td>
         <td><button class="update-btn" onclick="openEditModal(${purchase.id})">Update</button></td>
     `;
+
+    // Make row clickable on mobile (tapping anywhere opens edit modal)
+    row.addEventListener('click', function(e) {
+        // Don't trigger if clicking the update button itself
+        if (!e.target.classList.contains('update-btn')) {
+            openEditModal(purchase.id);
+        }
+    });
 
     return row;
 }

@@ -269,7 +269,7 @@ th {
 
 td {
     padding: 15px;
-    border-bottom: 1px solid #3a3a3a;
+    /* border-bottom: 1px solid #3a3a3a; */
     color: #d0d0d0;
 }
 
@@ -503,7 +503,7 @@ tbody tr:last-child td {
     }
 
     .price-value-container {
-        flex-direction: column;
+        flex-direction: row;
         align-items: flex-start;
         gap: 5px;
         width: 100%;
@@ -569,57 +569,125 @@ tbody tr:last-child td {
 
     table tbody tr {
         display: block;
-        background: #2a2a2a;
-        border: 1px solid #3a3a3a;
-        border-radius: 8px;
-        margin-bottom: 15px;
-        padding: 15px;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid #3a3a3a;
+        border-radius: 0;
+        margin-bottom: 0;
+        padding: 18px 15px;
+        position: relative;
+        cursor: pointer;
+    }
+
+    table tbody tr:last-of-type {
+        border-bottom: none;
     }
 
     table tbody tr:hover {
-        background: #2a2a2a;
+        background: rgba(255, 255, 255, 0.02);
     }
 
+    /* Hide all columns except Date, Grams, Price, and P/L */
     table tbody td {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px 0;
-        border: none;
-        text-align: right;
+        display: none !important;
     }
 
-    table tbody td:before {
-        content: attr(data-label);
-        font-weight: 600;
-        color: #888;
-        text-transform: uppercase;
-        font-size: 12px;
-        letter-spacing: 0.5px;
-        text-align: left;
-        flex: 0 0 40%;
+    /* Show only specific columns */
+    table tbody td[data-label="Date"],
+    table tbody td[data-label="Grams"],
+    table tbody td[data-label="Price (AED/g)"],
+    table tbody td[data-label="P/L (AED)"] {
+        display: block !important;
     }
 
-    table tbody td:last-child {
-        justify-content: center;
-        padding-top: 15px;
-        margin-top: 10px;
-        border-top: 1px solid #3a3a3a;
+    /* Date - Large header */
+    table tbody td[data-label="Date"] {
+        font-size: 15px;
+        font-weight: 400;
+        color: #b0b0b0;
+        margin-bottom: 10px;
+        padding: 0;
     }
 
-    table tbody td:last-child:before {
+    table tbody td[data-label="Date"]:before {
         display: none;
     }
 
-    /* Profit/Loss styling on mobile */
-    table tbody td.profit,
+    /* Content grid for Qty, Price, Days, and P/L */
+    table tbody td[data-label="Grams"],
+    table tbody td[data-label="Price (AED/g)"],
+    table tbody td[data-label="P/L (AED)"] {
+        padding: 0;
+        border: none;
+        position: absolute;
+    }
+
+    /* Left column - Qty */
+    table tbody td[data-label="Grams"] {
+        top: 43px;
+        left: 15px;
+        font-size: 14px;
+        color: #b0b0b0;
+    }
+
+    table tbody td[data-label="Grams"]:before {
+        content: "Gram ";
+        color: #888;
+        font-size: 14px;
+    }
+
+    /* Left column - Price */
+    table tbody td[data-label="Price (AED/g)"] {
+        top: 65px;
+        left: 15px;
+        font-size: 14px;
+        color: #b0b0b0;
+    }
+
+    table tbody td[data-label="Price (AED/g)"]:before {
+        content: "Price ";
+        color: #888;
+        font-size: 14px;
+    }
+
+    /* Right column - Days old */
+    table tbody td[data-label="P/L (AED)"] {
+        top: 43px;
+        right: 15px;
+        text-align: right;
+        font-size: 14px;
+        color: #888;
+    }
+
+    table tbody td[data-label="P/L (AED)"]:before {
+        content: attr(data-days) " days old";
+        display: block;
+        color: #888;
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
+
+    /* Right column - P/L value styling */
+    table tbody td.profit {
+        color: #4ade80 !important;
+        font-weight: 400;
+        font-size: 15px;
+    }
+
     table tbody td.loss {
-        font-weight: 700;
+        color: #f87171 !important;
+        font-weight: 400;
+        font-size: 15px;
+    }
+
+    /* Ensure proper spacing for content */
+    table tbody tr {
+        min-height: 90px;
+        padding-bottom: 20px;
     }
 
     .update-btn {
-        width: 100%;
-        padding: 10px 20px;
+        display: none;
     }
 
     /* Empty state on mobile */

@@ -130,7 +130,8 @@ let bankBuyPricePerGram = 0;
 const XAU_TO_GRAMS = 31.1035;
 
 // Bank rate adjustment (AED per XAU)
-const BANK_RATE_ADJUSTMENT = 150;
+const BANK_RATE_ADJUSTMENT_BUY = 250;
+const BANK_RATE_ADJUSTMENT_SELL = 200;
 
 // Update change indicator with arrow and styling
 function updateChangeIndicator(elementId, change, percent) {
@@ -170,8 +171,8 @@ async function fetchGoldPrice() {
         localStorage.setItem('xauPercent', xauPercent.toString());
 
         // Calculate bank rates
-        const bankBuyRate = xauPrice - BANK_RATE_ADJUSTMENT;
-        const bankSellRate = xauPrice + BANK_RATE_ADJUSTMENT;
+        const bankBuyRate = xauPrice - BANK_RATE_ADJUSTMENT_BUY;
+        const bankSellRate = xauPrice + BANK_RATE_ADJUSTMENT_SELL;
         const bankBuyPerGram = bankBuyRate / XAU_TO_GRAMS;
         const bankSellPerGram = bankSellRate / XAU_TO_GRAMS;
 
@@ -214,8 +215,8 @@ async function fetchGoldPrice() {
             document.getElementById('perGramPrice').textContent = currentGoldPrice.toFixed(2);
 
             // Calculate and display bank rates
-            const bankBuyRate = xauPrice - BANK_RATE_ADJUSTMENT;
-            const bankSellRate = xauPrice + BANK_RATE_ADJUSTMENT;
+            const bankBuyRate = xauPrice - BANK_RATE_ADJUSTMENT_BUY;
+            const bankSellRate = xauPrice + BANK_RATE_ADJUSTMENT_SELL;
             const bankBuyPerGram = bankBuyRate / XAU_TO_GRAMS;
             const bankSellPerGram = bankSellRate / XAU_TO_GRAMS;
 
@@ -442,7 +443,7 @@ function createPurchaseRow(purchase) {
     `;
 
     // Make row clickable on mobile (tapping anywhere opens edit modal)
-    row.addEventListener('click', function(e) {
+    row.addEventListener('click', function (e) {
         // Don't trigger if clicking the update button itself
         if (!e.target.classList.contains('update-btn')) {
             openEditModal(purchase.id);

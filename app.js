@@ -147,7 +147,12 @@ function updateChangeIndicator(elementId, change, percent) {
 // Fetch current gold price from API
 async function fetchGoldPrice() {
     try {
-        const response = await fetch('https://data-asg.goldprice.org/dbXRates/AED');
+        const response = await fetch('https://data-asg.goldprice.org/dbXRates/AED', {
+            headers: {
+                'Referer': 'https://goldprice.org/',
+                'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Mobile Safari/537.36'
+            }
+        });
         if (!response.ok) {
             throw new Error('Failed to fetch gold price');
         }
